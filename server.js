@@ -85,16 +85,19 @@ app.post('/api/jarvis', async (req, res) => {
             }
         }
 
-        // 2. REAL-TIME AI GENERATIVE CHAT BRAIN (Fixed to native fetch architecture)
+        // 2. REAL-TIME AI GENERATIVE CHAT BRAIN (Secure Header Configuration Layout)
         const GEMINI_KEY = process.env.GEMINI_API_KEY;
         if (GEMINI_KEY) {
             try {
-                // Utilizing the modern global fetch native to Node.js 24 without dependencies
-                const aiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
+                // Pointing directly to global content generation endpoints using proper structural headers
+                const aiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-goog-api-key': GEMINI_KEY
+                    },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `You are Jarvis, a real-time smart home AI assistant. Address the user respectfully as "sir". Keep your responses helpful, highly intelligent, natural, and concise so they can be easily spoken out loud. The user says: "${text}"` }] }]
+                        contents: [{ parts: [{ text: `You are Jarvis, a real-time smart home AI assistant. Always address the user respectfully as "sir". Keep your responses helpful, highly intelligent, natural, and concise so they can be easily spoken out loud. The user says: "${text}"` }] }]
                     })
                 });
                 
@@ -104,15 +107,15 @@ app.post('/api/jarvis', async (req, res) => {
                     return res.json({ reply_text: aiText });
                 }
             } catch (aiErr) {
-                console.error("Gemini cloud processing error: ", aiErr);
+                console.error("Gemini core connection error: ", aiErr);
             }
         }
 
-        // 3. Rule Fallback Backup if API Key is not set or times out
+        // 3. Rules Fallback Backup
         const localResponse = processLocalFallback(norm, liveClock);
         if (localResponse) return res.json(localResponse);
 
-        res.json({ reply_text: "System core is online, sir. However, the Gemini API engine returned an empty response loop. Please check your cloud configuration parameters." });
+        res.json({ reply_text: "System core configuration warning, sir. The Gemini AI engine returned an empty response loop. Please check your AI studio permissions setup." });
 
     } catch (err) {
         console.error("Internal Engine Error Stack: ", err);
