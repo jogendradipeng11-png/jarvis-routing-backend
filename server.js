@@ -20,25 +20,12 @@ if (!admin.apps.length) {
 
 const db = admin.database();
 
-// Global Fallback Logic if Cloud API is busy
-function processLocalFallback(norm, liveClock) {
-    if (norm.includes("time") || norm.includes("clock")) {
-        return { reply_text: `The current time is exactly ${liveClock}, sir.` };
-    }
-    if (norm.includes("hello") || norm.includes("hi jarvis")) {
-        return { reply_text: "Hello sir. Systems are fully stable. Ready for your instructions." };
-    }
-    return null;
-}
-
 app.post('/api/jarvis', async (req, res) => {
     try {
         const { text, devices } = req.body;
         if (!text) return res.status(400).json({ error: "Missing parameter query string." });
 
         const norm = text.toLowerCase().trim();
-        const now = new Date();
-        const liveClock = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
         // 1. DYNAMIC HARDWARE CHECKER MATRIX
         const isOff = norm.includes("off") || norm.includes("stop") || norm.includes("turn off");
@@ -85,37 +72,36 @@ app.post('/api/jarvis', async (req, res) => {
             }
         }
 
-        // 2. REAL-TIME AI GENERATIVE CHAT BRAIN (Secure Header Configuration Layout)
-        const GEMINI_KEY = process.env.GEMINI_API_KEY;
-        if (GEMINI_KEY) {
+        // 2. UNRESTRICTED GLOBAL REAL-TIME AI BRAIN
+        const AI_KEY = process.env.JARVIS_AI_KEY;
+        if (AI_KEY) {
             try {
-                // Pointing directly to global content generation endpoints using proper structural headers
-                const aiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent`, {
+                const aiResponse = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
-                        'x-goog-api-key': GEMINI_KEY
+                        'Authorization': `Bearer ${AI_KEY}`
                     },
                     body: JSON.stringify({
-                        contents: [{ parts: [{ text: `You are Jarvis, a real-time smart home AI assistant. Always address the user respectfully as "sir". Keep your responses helpful, highly intelligent, natural, and concise so they can be easily spoken out loud. The user says: "${text}"` }] }]
+                        model: "google/gemini-2.5-flash:free", // Calls the fresh Gemini engine completely free!
+                        messages: [
+                            { role: "system", content: "You are Jarvis, a highly intelligent smart home AI assistant. Always address the user respectfully as 'sir'. Keep answers helpful, concise, and natural so they speak out loud easily." },
+                            { role: "user", content: text }
+                        ]
                     })
                 });
                 
                 const data = await aiResponse.json();
-                if (data.candidates?.[0]?.content?.parts?.[0]?.text) {
-                    let aiText = data.candidates[0].content.parts[0].text.trim();
-                    return res.json({ reply_text: aiText });
+                if (data.choices?.[0]?.message?.content) {
+                    return res.json({ reply_text: data.choices[0].message.content.trim() });
                 }
             } catch (aiErr) {
-                console.error("Gemini core connection error: ", aiErr);
+                console.error("Global AI Route Error: ", aiErr);
             }
         }
 
-        // 3. Rules Fallback Backup
-        const localResponse = processLocalFallback(norm, liveClock);
-        if (localResponse) return res.json(localResponse);
-
-        res.json({ reply_text: "System core configuration warning, sir. The Gemini AI engine returned an empty response loop. Please check your AI studio permissions setup." });
+        // 3. HARDWARE NODES NOMINAL FALLBACK
+        res.json({ reply_text: "System cores are active, sir. Standing by for specific device instructions." });
 
     } catch (err) {
         console.error("Internal Engine Error Stack: ", err);
@@ -124,4 +110,4 @@ app.post('/api/jarvis', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`🚀 Jarvis Live Real-Time Engine executing on Port ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Jarvis Unrestricted Live Brain running on Port ${PORT}`));
