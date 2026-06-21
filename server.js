@@ -83,7 +83,8 @@ app.post('/api/jarvis', async (req, res) => {
                         'Authorization': `Bearer ${AI_KEY}`
                     },
                     body: JSON.stringify({
-                        model: "google/gemini-2.5-flash:free", // Calls the fresh Gemini engine completely free!
+                        // Swapping to OpenRouter's most powerful, completely open free models:
+                        model: "meta-llama/llama-3-8b-instruct:free", 
                         messages: [
                             { role: "system", content: "You are Jarvis, a highly intelligent smart home AI assistant. Always address the user respectfully as 'sir'. Keep answers helpful, concise, and natural so they speak out loud easily." },
                             { role: "user", content: text }
