@@ -7,13 +7,12 @@ app.use(cors());
 app.use(express.json());
 
 app.post('/api/chat', async (req, res) => {
-    const { command } = req.body; // Key is handled securely by Render now
+    const { command } = req.body;
 
     if (!command) {
         return res.status(400).json({ error: "Missing required query payload strings." });
     }
 
-    // Double-check if the dashboard variable exists
     if (!process.env.NVIDIA_API_KEY) {
         return res.status(500).json({ error: "NVIDIA_API_KEY is missing from Render Environment settings." });
     }
@@ -26,7 +25,8 @@ app.post('/api/chat', async (req, res) => {
                 "Authorization": `Bearer ${process.env.NVIDIA_API_KEY.trim()}`
             },
             body: JSON.stringify({
-                model: "nvidia/nemotron-3-ultra-550b-a55b",
+                // 🚀 UPDATED: Using the ultra-fast, stable Llama 3.1 70B Instruct model
+                model: "meta/llama-3.1-70b-instruct", 
                 messages: [
                     { role: "system", content: "You are Jarvis, a highly intelligent smart home assistant. Always address the user respectfully as 'sir'. Keep answers helpful, concise, and natural so they speak out loud easily." },
                     { role: "user", content: command }
