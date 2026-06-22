@@ -1,5 +1,4 @@
 {
-  {
   "name": "jarvis-routing-backend",
   "version": "1.0.0",
   "description": "Secure intermediate routing engine for NVIDIA Build API keys",
